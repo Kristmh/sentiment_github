@@ -82,7 +82,7 @@ def main():
             filtered_issue["score"] = sentiment_results["score"]
             filtered_issue["label"] = sentiment_results["label"]
             print(
-                f"Title: {filtered_issue['title']} Score: {filtered_issue['score']} Label: {filtered_issue['label']}"
+                f"Title: {filtered_issue['title']} Score: {filtered_issue['score']:.4f} Label: {filtered_issue['label']}"
             )
 
             results.append(filtered_issue)

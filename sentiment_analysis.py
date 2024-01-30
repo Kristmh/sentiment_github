@@ -1,10 +1,6 @@
-import logging
+from logging_setup import logging
 
 from transformers import AutoTokenizer
-
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
 
 
 def predict_sentiment(issue: str, pipe, model):

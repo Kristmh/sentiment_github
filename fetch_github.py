@@ -1,5 +1,4 @@
 import json
-import logging
 import math
 import os
 import re
@@ -10,6 +9,8 @@ import requests
 from dotenv import load_dotenv
 from tqdm import tqdm
 
+from logging_setup import logging
+
 load_dotenv()
 personal_access_token = os.getenv("GITHUB_TOKEN")
 
@@ -17,8 +18,8 @@ personal_access_token = os.getenv("GITHUB_TOKEN")
 def fetch_github_issues(
     owner="lazyvim",
     repo="lazyvim",
-    num_issues=3,
-    per_page=3,
+    num_issues=5,
+    per_page=5,
     rate_limit=5_000,
     issues_path=Path("."),
     github_token=personal_access_token,

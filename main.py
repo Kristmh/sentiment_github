@@ -1,85 +1,55 @@
+import argparse
 import re
-from enum import Enum
-from transformers import pipeline
-
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-
-from api.fetch_github import fetch_github_issues, extract_specific_fields
-from api.sentiment_analysis import predict_sentiment
-
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
-)
+import sys
 
 
-class AnalysisType(str, Enum):
-    sentiment = "sentiment"
-    emotion = "emotion"
+def is_valid_github_url(url):
+    github_url_pattern = r"^https://github\.com/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$"
+    return re.match(github_url_pattern, url)
 
 
-class AnalyzeRequest(BaseModel):
-    url: str
-    analysis_type: AnalysisType
-    num_issues: int
-    per_page: int
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Sentiment Analysis on GitHub repositories."
+    )
+    parser.add_argument(
+        "github_url",
+        nargs="?",
+        default="https://github.com/neovim/neovim",
+        help="GitHub repository URL (default: https://github.com/neovim/neovim)",
+    )
+    parser.add_argument(
+        "-n",
+        "--number_choice",
+        default="0",
+        choices=["0", "1"],
+        help="Choose between 0 or 1 (default: 0)",
+    )
+    parser.add_argument(
+        "-e",
+        "--example",
+        action="store_true",
+        help="Use example URL https://github.com/neovim/neovim",
+    )
+    return parser.parse_args()
 
 
-@app.post("/api/analyze")
-async def analyze_github(request: AnalyzeRequest):
-    url: str = request.url
-    num_issues: int = int(request.num_issues)
-    per_page: int = int(request.per_page)
-    analysis_type: AnalysisType = request.analysis_type
+def main():
+    args = parse_args()
 
-    # Get github owner and repo
-    match = re.search(r"github\.com/([^/]+)/([^/]+)", url)
+    # Override URL if example flag is used
+    if args.example:
+        args.github_url = "https://github.com/neovim/neovim"
 
-    if not match:
-        raise HTTPException(status_code=400, detail="Invalid GitHub URL")
-
-    owner, repo = match.groups()
-
-    # Fetch GitHub issues
-    try:
-        issues = fetch_github_issues(owner, repo, num_issues, per_page)
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-    # Perform analysis
-    results = []
-    try:
-        for issue in issues:
-            filtered_issue = extract_specific_fields(issue)
-            if analysis_type == AnalysisType.emotion:
-                model = "SamLowe/roberta-base-go_emotions"
-                pipe = pipeline("text-classification", model=model)
-                sentiment_results = predict_sentiment(
-                    filtered_issue["text_clean"], pipe, model
-                )
-            elif analysis_type == AnalysisType.sentiment:
-                model = "distilbert-base-uncased-finetuned-sst-2-english"
-                pipe = pipeline("sentiment-analysis", model=model)
-                sentiment_results = predict_sentiment(
-                    filtered_issue["text_clean"], pipe, model
-                )
-            filtered_issue["score"] = sentiment_results["score"]
-            filtered_issue["label"] = sentiment_results["label"]
-            results.append(filtered_issue)
-        return results
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Analysis Error: {str(e)}")
+    if not is_valid_github_url(args.github_url):
+        print("Invalid GitHub repository URL.")
+        sys.exit(1)
+    print(f"GitHub repository URL: {args.github_url}")
+    if args.number_choice == "0":
+        print("You chose 0.")
+    elif args.number_choice == "1":
+        print("You chose 1.")
 
 
 if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    main()

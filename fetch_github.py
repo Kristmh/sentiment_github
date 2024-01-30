@@ -13,10 +13,6 @@ from tqdm import tqdm
 load_dotenv()
 personal_access_token = os.getenv("GITHUB_TOKEN")
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
 
 def fetch_github_issues(
     owner="lazyvim",

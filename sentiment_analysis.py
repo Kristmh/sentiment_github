@@ -23,7 +23,7 @@ def predict_sentiment(issue: str, pipe, model):
     # Pass the truncated text to the pipeline
     sentiment = pipe(truncated_text)
 
-    sentiment = {"label": sentiment[0]["label"], "score": sentiment[0]["score"]}
+    sentiment = {"label": sentiment[0]["label"].lower(), "score": sentiment[0]["score"]}
     logging.info(sentiment)
     return sentiment
 

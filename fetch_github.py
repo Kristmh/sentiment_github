@@ -1,4 +1,5 @@
 import json
+import sys
 import math
 import os
 import re
@@ -42,6 +43,7 @@ def fetch_github_issues(
             batch.extend(issues.json())
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")
+            sys.exit(1)
             break
         except json.decoder.JSONDecodeError as e:
             logging.error(f"JSON decode failed: {e}")

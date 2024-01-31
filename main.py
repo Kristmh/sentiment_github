@@ -11,8 +11,19 @@ from logging_setup import logging
 
 
 def is_valid_github_url(url):
+    """Check if the GitHub URL is valid."""
     github_url_pattern = r"^https://github\.com/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$"
     return re.match(github_url_pattern, url)
+
+
+def format_output(filtered_issue):
+    """Format output to make it more readable."""
+    print(
+        f"- Title: {filtered_issue['title']}\n"
+        f"  Score: {filtered_issue['score']:.4f}\n"
+        f"  Label: {filtered_issue['label']}\n"
+        f"  URL: {filtered_issue['url']}\n"
+    )
 
 
 def check_args(args):
@@ -48,6 +59,13 @@ def parse_args():
     )
     parser.add_argument("-o", "--owner", help="GitHub repository owner")
     parser.add_argument("-r", "--repo", help="GitHub repository name")
+    parser.add_argument(
+        "-f",
+        "--format",
+        choices=["yes", "no"],
+        default="yes",
+        help="Format output to more readable text(default: yes)",
+    )
     return parser.parse_args()
 
 
@@ -99,11 +117,12 @@ def main():
                 )
             filtered_issue["score"] = sentiment_results["score"]
             filtered_issue["label"] = sentiment_results["label"]
-            print(
-                f"- Title: {filtered_issue['title']}\n"
-                f"  Score: {filtered_issue['score']:.4f}\n"
-                f"  Label: {filtered_issue['label']}\n"
-            )
+            if args.format == "yes":
+                format_output(filtered_issue)
+            else:
+                print(
+                    f"Title: {filtered_issue['title']} Score: {filtered_issue['score']:.4f} Label: {filtered_issue['label']}"
+                )
 
             # results.append(filtered_issue)
 

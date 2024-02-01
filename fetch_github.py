@@ -1,19 +1,14 @@
 import json
-import sys
 import math
-import os
 import re
+import sys
 import time
 from pathlib import Path
 
 import requests
-from dotenv import load_dotenv
 from tqdm import tqdm
 
 from logging_setup import logging
-
-load_dotenv()
-personal_access_token = os.getenv("GITHUB_TOKEN")
 
 
 def fetch_github_issues(
@@ -23,7 +18,6 @@ def fetch_github_issues(
     per_page=5,
     rate_limit=5_000,
     issues_path=Path("."),
-    github_token=personal_access_token,
 ):
     if not issues_path.is_dir():
         issues_path.mkdir(exist_ok=True)
@@ -32,22 +26,20 @@ def fetch_github_issues(
     all_issues = []
     num_pages = math.ceil(num_issues / per_page)
     base_url = "https://api.github.com/repos"
-    headers = {"Authorization": f"token {github_token}"}
 
     for page in tqdm(range(num_pages)):
         try:
             # State=all gets both open and closed issues
             query = f"issues?page={page}&per_page={per_page}&state=all"
-            issues = requests.get(f"{base_url}/{owner}/{repo}/{query}", headers=headers)
+            issues = requests.get(f"{base_url}/{owner}/{repo}/{query}")
             issues.raise_for_status()
             batch.extend(issues.json())
         except requests.exceptions.RequestException as e:
             logging.error(f"Request failed: {e}")
             sys.exit(1)
-            break
         except json.decoder.JSONDecodeError as e:
             logging.error(f"JSON decode failed: {e}")
-            break
+            sys.exit(1)
 
         if len(batch) > rate_limit and len(all_issues) < num_issues:
             all_issues.extend(batch)

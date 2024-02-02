@@ -15,7 +15,7 @@ def fetch_github_issues(
     owner="lazyvim",
     repo="lazyvim",
     num_issues=5,
-    per_page=5,
+    per_page=100,
     rate_limit=5_000,
     issues_path=Path("."),
 ):
@@ -27,6 +27,7 @@ def fetch_github_issues(
     num_pages = math.ceil(num_issues / per_page)
     base_url = "https://api.github.com/repos"
 
+    print(f"Fetching {num_issues} issues from {owner}/{repo}...")
     for page in tqdm(range(num_pages)):
         try:
             # State=all gets both open and closed issues
@@ -50,7 +51,11 @@ def fetch_github_issues(
     all_issues.extend(batch)
     logging.info(f"Total number of issues fetched: {len(all_issues)}")
 
-    return all_issues
+    # If number of requested issuse is less than the fetched issues.
+    if len(all_issues) <= num_issues:
+        return all_issues
+    else:
+        return all_issues[:num_issues]
 
 
 # Extract title, url, body and if it is a pull request

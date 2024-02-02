@@ -76,6 +76,12 @@ Choose between models(sentiment/emotion):
 python main.py -m emotion
 ```
 
+Choose number of issues (between 1 and 100):
+
+```bash
+python main.py -n 42
+```
+
 Select GitHub repository with owner and repo name:
 
 ```bash

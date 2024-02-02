@@ -1,7 +1,6 @@
 import argparse
 import re
 import sys
-import requests
 
 from transformers import pipeline
 
@@ -32,6 +31,16 @@ def check_args(args):
         raise ValueError(
             "Flag owner(-o) and repo(-r) must be used together. Ex: python main.py -o octocat -r Hello-World"
         )
+
+
+def check_range(value):
+    """Check if the value is within the range."""
+    value = int(value)
+    if value < 1 or value > 100:
+        raise argparse.ArgumentTypeError(
+            f"{value} is an invalid value; must be between 0 and 100"
+        )
+    return value
 
 
 def parse_args():
@@ -66,6 +75,13 @@ def parse_args():
         default="yes",
         help="Format output to more readable text(default: yes)",
     )
+    parser.add_argument(
+        "-n",
+        "--number",
+        type=check_range,
+        default=5,
+        help="Number of issues to analyze (default: 5)",
+    )
     return parser.parse_args()
 
 
@@ -96,10 +112,14 @@ def main():
     logging.info(f"GitHub repository name: {repo}")
 
     # Fetch issues and exit if owner or repo is invalid
-    issues = fetch_github_issues(owner, repo)
+    issues = fetch_github_issues(owner, repo, args.number)
 
-    # results = []
-    print(f"Anlyzing issues for {owner}/{repo}...")
+    if len(issues) == 0:
+        print(f"No issues found for {owner}/{repo}.")
+        sys.exit(1)
+
+    count = 0
+    print(f"Anlyzing {len(issues)} issues for {owner}/{repo}...")
     try:
         for issue in issues:
             filtered_issue = extract_specific_fields(issue)
@@ -117,14 +137,14 @@ def main():
                 )
             filtered_issue["score"] = sentiment_results["score"]
             filtered_issue["label"] = sentiment_results["label"]
+            count += 1
+            print(f"Analyzed issue {count} of {args.number}...")
             if args.format == "yes":
                 format_output(filtered_issue)
             else:
                 print(
                     f"Title: {filtered_issue['title']} Score: {filtered_issue['score']:.4f} Label: {filtered_issue['label']}"
                 )
-
-            # results.append(filtered_issue)
 
     except Exception as e:
         raise e

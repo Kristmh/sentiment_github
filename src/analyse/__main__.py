@@ -4,10 +4,11 @@ import sys
 
 from transformers import pipeline
 
-
+# Import the logging setup
+import analyse.logging_setup  # noqa: F401, pylint: disable=unused-import
+import logging
 from analyse.fetch_github import extract_specific_fields, fetch_github_issues
 from analyse.sentiment_analysis import predict_sentiment
-from analyse.logging_setup import logging
 
 
 def is_valid_github_url(url):

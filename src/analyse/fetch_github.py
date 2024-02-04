@@ -4,11 +4,14 @@ import re
 import sys
 import time
 from pathlib import Path
+from typing import Any, Dict, List
 
 import requests
 from tqdm import tqdm
 
-from analyse.logging_setup import logging
+# Import the logging setup
+import analyse.logging_setup  # noqa: F401, pylint: disable=unused-import
+import logging
 
 
 def fetch_github_issues(
@@ -23,7 +26,7 @@ def fetch_github_issues(
         issues_path.mkdir(exist_ok=True)
 
     batch = []
-    all_issues = []
+    all_issues: List[Dict[str, Any]] = []
     num_pages = math.ceil(num_issues / per_page)
     base_url = "https://api.github.com/repos"
 

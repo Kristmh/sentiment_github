@@ -1,4 +1,4 @@
-from logging_setup import logging
+from analyse.logging_setup import logging
 
 from transformers import AutoTokenizer
 

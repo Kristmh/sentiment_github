@@ -44,52 +44,58 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+Install the package:
+
+```bash
+pip install -e .
+```
+
 ## Usage
 
 Run example:
 
 ```bash
-python main.py
+analysis
 ```
 
 Run help to see all options:
 
 ```bash
-python main.py --help
+analysis --help
 ```
 
 Test with a different repo:
 
 ```bash
-python main.py https://github.com/python/cpython
+analysis https://github.com/python/cpython
 ```
 
 Example using sentiment model, owner: python, repo: cpython and format: yes
 
 ```bash
-python main.py -m sentiment -o python -r cpython -f yes
+analysis -m sentiment -o python -r cpython -f yes
 ```
 
 Choose between models(sentiment/emotion):
 
 ```bash
-python main.py -m emotion
+analysis -m emotion
 ```
 
 Choose number of issues (between 1 and 100):
 
 ```bash
-python main.py -n 42
+analysis -n 42
 ```
 
 Select GitHub repository with owner and repo name:
 
 ```bash
-python main.py -o python -r cpython
+analysis -o python -r cpython
 ```
 
 Select between different output formats(yes/no)
 
 ```bash
-python main.py -f no
+analysis -f no
 ```

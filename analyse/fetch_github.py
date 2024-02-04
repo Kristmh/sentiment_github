@@ -8,7 +8,7 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 
-from logging_setup import logging
+from analyse.logging_setup import logging
 
 
 def fetch_github_issues(

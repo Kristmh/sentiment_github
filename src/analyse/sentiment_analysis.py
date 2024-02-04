@@ -1,4 +1,6 @@
-from analyse.logging_setup import logging
+# Import the logging setup
+import analyse.logging_setup  # noqa: F401, pylint: disable=unused-import
+import logging
 
 from transformers import AutoTokenizer
 

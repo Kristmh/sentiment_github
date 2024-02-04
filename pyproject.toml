@@ -1,8 +1,9 @@
-
 [project]
 name = "sentiment-analysis"
 version = "0.1.0"
 dependencies = []
+
+
 
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
@@ -10,3 +11,11 @@ build-backend = "setuptools.build_meta"
 
 [project.scripts]
 analysis = "analyse.__main__:main"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --cov"
+testpaths = [
+    "tests",
+    "integration",
+]

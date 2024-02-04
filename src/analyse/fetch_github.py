@@ -81,7 +81,7 @@ def clean_text(text):
     if not text:
         return text
     # Remove URLs
-    text = re.sub(r"http\S+", "[URL]", text)
+    text = re.sub(r"http\S+", "", text)
     # Remove HTML tags
     text = re.sub(r"<.*?>", "", text)
     # Remove special characters and numbers

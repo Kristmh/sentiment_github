@@ -1,8 +1,14 @@
 [project]
 name = "sentiment-analysis"
 version = "0.1.0"
-dependencies = []
-
+dependencies = [
+  "requests",
+  "tqdm",
+  "torch",
+  "torchvision",
+  "torchaudio",
+  "transformers",
+]
 
 
 [build-system]

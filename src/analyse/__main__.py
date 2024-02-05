@@ -1,6 +1,7 @@
 import argparse
 import re
 import sys
+import csv
 
 from transformers import pipeline
 
@@ -19,7 +20,7 @@ def is_valid_github_url(url):
 
 def format_output(filtered_issue):
     """Format output to make it more readable."""
-    print(
+    return (
         f"- Title: {filtered_issue['title']}\n"
         f"  Score: {filtered_issue['score']:.4f}\n"
         f"  Label: {filtered_issue['label']}\n"
@@ -84,6 +85,8 @@ def parse_args():
         default=5,
         help="Number of issues to analyze (default: 5)",
     )
+    parser.add_argument("-s", "--save", help="Save the output to a file")
+    parser.add_argument("-c", "--csv", help="Save the output to a CSV file")
     return parser.parse_args()
 
 
@@ -123,6 +126,8 @@ def main():
     count = 0
     print(f"Anlyzing {len(issues)} issues for {owner}/{repo}...")
     try:
+        output = []
+        csv_output = []
         for issue in issues:
             filtered_issue = extract_specific_fields(issue)
             if args.model_choice == "emotion":
@@ -142,12 +147,37 @@ def main():
             count += 1
             print(f"Analyzed issue {count} of {args.number}...")
             if args.format == "yes":
-                format_output(filtered_issue)
+                formatted = format_output(filtered_issue)
+                print(formatted)
+                output.append(formatted)
             else:
-                print(
-                    f"Title: {filtered_issue['title']} Score: {filtered_issue['score']:.4f} Label: {filtered_issue['label']}"
+                formatted = f"Title: {filtered_issue['title']} Score: {filtered_issue['score']:.4f} Label: {filtered_issue['label']}"
+                print(formatted)
+                output.append(formatted + "\n")
+            if args.csv:
+                csv_output.append(
+                    {
+                        "Title": filtered_issue["title"],
+                        "Score": filtered_issue["score"],
+                        "Label": filtered_issue["label"],
+                        "URL": filtered_issue["url"],
+                    }
                 )
 
+        # Save output to a file
+        if args.save:
+            with open(args.save, "w") as file:
+                file.writelines(output)
+            print(f"Output written to {args.save}")
+        if args.csv:
+            with open(args.csv, mode="w", newline="", encoding="utf-8") as csv_file:
+                fieldnames = ["Title", "Score", "Label", "URL"]
+                writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+                writer.writeheader()
+                for row in csv_output:
+                    writer.writerow(row)
+            print(f"Output written to {args.csv}")
     except Exception as e:
         raise e
 

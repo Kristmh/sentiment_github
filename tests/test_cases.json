@@ -1,0 +1,41 @@
+[
+  {
+    "input": {
+      "title": "Issue with URL and HTML",
+      "html_url": "https://github.com/octocat/Hello-World/issues/1",
+      "body": "This issue contains a URL http://example.com and <b>HTML tags</b>."
+    },
+    "expected": {
+      "url": "https://github.com/octocat/Hello-World/issues/1",
+      "title": "Issue with URL and HTML",
+      "body": "This issue contains a URL http://example.com and <b>HTML tags</b>.",
+      "text_clean": "issue with url and html this issue contains a url and html tags"
+    }
+  },
+  {
+    "input": {
+      "title": "Issue without body",
+      "html_url": "https://github.com/octocat/Hello-World/issues/2",
+      "body": ""
+    },
+    "expected": {
+      "url": "https://github.com/octocat/Hello-World/issues/2",
+      "title": "Issue without body",
+      "body": "",
+      "text_clean": "issue without body"
+    }
+  },
+  {
+    "input": {
+      "title": "Empty issue",
+      "html_url": "https://github.com/octocat/Hello-World/issues/3",
+      "body": ""
+    },
+    "expected": {
+      "url": "https://github.com/octocat/Hello-World/issues/3",
+      "title": "Empty issue",
+      "body": "",
+      "text_clean": "empty issue"
+    }
+  }
+]

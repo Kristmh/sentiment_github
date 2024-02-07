@@ -1,11 +1,60 @@
-from analyse.fetch_github import clean_text, extract_specific_fields
-
 import json
+
 import pytest
+from analyse.fetch_github import (
+    clean_text,
+    extract_specific_fields,
+    fetch_github_issues,
+)
 
-# Assuming the implementation of extract_specific_fields and clean_text functions are available
+
+def test_fetch_github_issues_success(mocker):
+    # Mock successful API response
+    mock_response = mocker.MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = [
+        {"title": "Issue 1", "html_url": "http://example.com/1", "body": "Body 1"},
+        {"title": "Issue 2", "html_url": "http://example.com/2", "body": "Body 2"},
+    ]
+    mocker.patch("requests.get", return_value=mock_response)
+
+    # Call the function
+    result = fetch_github_issues(owner="octocat", repo="Hello-World", num_issues=2)
+
+    # Assert fetch status is success and the correct number of issues are fetched
+    assert result["status"] == "success"
+    assert len(result["issues"]) == 2
 
 
+def test_rate_limit_handling(mocker):
+    # Mock rate limited API response
+    mock_response = mocker.MagicMock()
+    mock_response.status_code = 403  # GitHub's status code for rate limiting
+    mocker.patch("requests.get", return_value=mock_response)
+
+    # Call the function expecting rate limit status
+    result = fetch_github_issues(owner="octocat", repo="Hello-World", num_issues=2)
+
+    # Assert fetch status is rate_limited
+    assert result["status"] == "rate_limited"
+
+
+def test_fetch_github_issues_failed_status_code(mocker):
+    # Mock failed API response with a 404 status code
+    mock_response = mocker.MagicMock()
+    mock_response.status_code = 404  # Not Found error
+    mocker.patch("requests.get", return_value=mock_response)
+
+    result = fetch_github_issues(
+        owner="nonexistent-owner", repo="nonexistent-repo", num_issues=2
+    )
+
+    assert result["status"] == "error"
+    # If the request fails, the issues list should be empty
+    assert len(result["issues"]) == 0
+
+
+# Test the extract_specific_fields function
 def load_test_cases(path):
     with open(path) as file:
         return json.load(file)

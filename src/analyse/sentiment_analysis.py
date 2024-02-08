@@ -32,11 +32,11 @@ def predict_sentiment(issue: str, pipe, model):
 
 if __name__ == "__main__":
     from transformers import pipeline
-    from fetch_github import extract_specific_fields, fetch_github_issues
+    from analyse.fetch_github import extract_specific_fields, fetch_github_issues
 
     data = fetch_github_issues("microsoft", "vscode")
-    filtered_issue = extract_specific_fields(data[0])
+    filtered_issue = extract_specific_fields(data["issues"][0])
     model = "SamLowe/roberta-base-go_emotions"
     pipe = pipeline("text-classification", model=model)
     sentiment_results = predict_sentiment(filtered_issue["text_clean"], pipe, model)
-    logging.info(sentiment_results)
+    print(sentiment_results)

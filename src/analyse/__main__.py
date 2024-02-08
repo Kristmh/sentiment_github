@@ -18,13 +18,21 @@ def is_valid_github_url(url: str):
     return re.match(github_url_pattern, url)
 
 
+# Define ANSI color codes
+YELLOW = "\033[93m"
+GREEN = "\033[92m"
+CYAN = "\033[96m"
+BLUE = "\033[94m"
+RESET = "\033[0m"  # Resets the color to default
+
+
 def format_output(filtered_issue):
     """Format output to make it more readable."""
     return (
-        f"- Title: {filtered_issue['title']}\n"
-        f"  Score: {filtered_issue['score']:.4f}\n"
-        f"  Label: {filtered_issue['label']}\n"
-        f"  URL: {filtered_issue['url']}\n"
+        f"{YELLOW}- Title: {filtered_issue['title']}{RESET}\n"
+        f"{GREEN}  Score: {filtered_issue['score']:.4f}{RESET}\n"
+        f"{CYAN}  Label: {filtered_issue['label']}{RESET}\n"
+        f"{BLUE}  URL: {filtered_issue['url']}{RESET}\n"
     )
 
 

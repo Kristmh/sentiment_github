@@ -5,7 +5,7 @@ Can choose between using 2 models.
 One finds if issues are positive or negative. Model: [A version of Distilbert](https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english).
 The seconds finds emotions in issues like confusion, joy, nervousness, surprise. Model [Based on roberta model](https://huggingface.co/SamLowe/roberta-base-go_emotions).
 
-![analysis](analysis.gif)
+![analysis](assets/analysis.gif)
 
 ## Why?
 

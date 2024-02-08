@@ -103,7 +103,6 @@ analysis -f no
 
 ## Testing
 
-First run the tests locally.
 Follow the step in the quick start section and then install the dev requirements:
 
 ```bash
@@ -136,6 +135,6 @@ Run everything at once with tox in new virtual environment:
 tox
 ```
 
-Before pushing to the repository, make sure to run tox and pass all the test.
+Before pushing to the repository, make sure to run locally tox and pass all the test.
 
 When pushing the code or doing a pull request, a GitHub action workflow will trigger and run the same tests as in the tox command.

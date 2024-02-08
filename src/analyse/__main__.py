@@ -12,19 +12,27 @@ from analyse.fetch_github import extract_specific_fields, fetch_github_issues
 from analyse.sentiment_analysis import predict_sentiment
 
 
-def is_valid_github_url(url):
+def is_valid_github_url(url: str):
     """Check if the GitHub URL is valid."""
     github_url_pattern = r"^https://github\.com/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$"
     return re.match(github_url_pattern, url)
 
 
+# Define ANSI color codes
+YELLOW = "\033[93m"
+GREEN = "\033[92m"
+CYAN = "\033[96m"
+BLUE = "\033[94m"
+RESET = "\033[0m"  # Resets the color to default
+
+
 def format_output(filtered_issue):
     """Format output to make it more readable."""
     return (
-        f"- Title: {filtered_issue['title']}\n"
-        f"  Score: {filtered_issue['score']:.4f}\n"
-        f"  Label: {filtered_issue['label']}\n"
-        f"  URL: {filtered_issue['url']}\n"
+        f"{YELLOW}- Title: {filtered_issue['title']}{RESET}\n"
+        f"{GREEN}  Score: {filtered_issue['score']:.4f}{RESET}\n"
+        f"{CYAN}  Label: {filtered_issue['label']}{RESET}\n"
+        f"{BLUE}  URL: {filtered_issue['url']}{RESET}\n"
     )
 
 
@@ -39,7 +47,7 @@ def check_args(args):
 def check_range(value):
     """Check if the value is within the range."""
     value = int(value)
-    if value < 1 or value > 100:
+    if value < 1 or value > 1000:
         raise argparse.ArgumentTypeError(
             f"{value} is an invalid value; must be between 0 and 100"
         )
@@ -117,7 +125,14 @@ def main():
     logging.info(f"GitHub repository name: {repo}")
 
     # Fetch issues and exit if owner or repo is invalid
-    issues = fetch_github_issues(owner, repo, args.number)
+    all_issues = fetch_github_issues(owner, repo, args.number)
+    issues = all_issues["issues"]
+
+    if all_issues["status"] == "rate_limited":
+        print(f"Rate limited. Fetched {len(issues)} of {args.number} issues.")
+    elif all_issues["status"] == "error":
+        print("Failed to fetch issues. Exiting...")
+        sys.exit(1)
 
     if len(issues) == 0:
         print(f"No issues found for {owner}/{repo}.")
@@ -145,7 +160,7 @@ def main():
             filtered_issue["score"] = sentiment_results["score"]
             filtered_issue["label"] = sentiment_results["label"]
             count += 1
-            print(f"Analyzed issue {count} of {args.number}...")
+            print(f"Analyzed issue {count} of {len(issues)}...")
             if args.format == "yes":
                 formatted = format_output(filtered_issue)
                 print(formatted)

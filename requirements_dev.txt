@@ -2,6 +2,7 @@ black
 tox
 pytest
 pytest-cov
+pytest-mock
 pytest-sugar
 mypy
 types-requests
